@@ -9,17 +9,17 @@
 #include <unistd.h>
 
 #define MAXLINE     4096    /* max text line length */
-#define DAYTIME_PORT 3333
+// #define DAYTIME_PORT 3333
 
 int
 main(int argc, char **argv)
 {
-    int     sockfd, n;
-    char    recvline[MAXLINE + 1];
+    int    sockfd, n, portnum;
+    char   recvline[MAXLINE + 1];
     struct sockaddr_in servaddr;
 
-    if (argc != 2) {
-        printf("usage: client <IPaddress>\n");
+    if (argc != 3) {
+        printf("usage: client <IPaddress> <PortNumber>\n");
         exit(1);
     }
 
@@ -28,9 +28,11 @@ main(int argc, char **argv)
         exit(1);
     }
 
+    portnum = atoi(argv[2]);
+
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(DAYTIME_PORT);  /* daytime server */
+    servaddr.sin_port = htons(portnum);  /* daytime server */
     if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0) {
         printf("inet_pton error for %s\n", argv[1]);
         exit(1);
