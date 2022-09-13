@@ -12,8 +12,14 @@
 #define MAXLINE     4096    /* max text line length */
 // #define DAYTIME_PORT 3333
 
-int
-main(int argc, char **argv)
+struct message{
+    int addrlen, timelen, msglen;
+    char addr[MAXLINE];
+    char currtime[MAXLINE];
+    char payload[MAXLINE];
+};
+
+int main(int argc, char **argv)
 {
     int    sockfd, n, s;
     char   recvline[MAXLINE + 1];
@@ -69,4 +75,3 @@ main(int argc, char **argv)
 
     exit(EXIT_SUCCESS);
 }
-
