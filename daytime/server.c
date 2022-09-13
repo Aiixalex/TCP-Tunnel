@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
     struct ifreq ifr;
     ifr.ifr_addr.sa_family = AF_INET;
-    strncpy(ifr.ifr_name, "eth0", IFNAMSIZ-1);
+    strncpy(ifr.ifr_name, "ens160", IFNAMSIZ-1);
     ioctl(listenfd, SIOCGIFADDR, &ifr);
     printf("%s\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
 
