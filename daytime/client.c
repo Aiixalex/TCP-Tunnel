@@ -22,8 +22,9 @@ struct message{
 int main(int argc, char **argv)
 {
     int    sockfd, n, s;
-    char   recvline[MAXLINE + 1];
+    // char   recvline[MAXLINE + 1];
     struct addrinfo hints, *result;
+    struct message msg;
     // struct sockaddr_in servaddr;
 
     if (argc != 3) {
@@ -61,12 +62,15 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    while ( (n = read(sockfd, recvline, MAXLINE)) > 0) {
-        recvline[n] = 0;        /* null terminate */
-        if (fputs(recvline, stdout) == EOF) {
-            printf("fputs error\n");
-            exit(EXIT_FAILURE);
-        }
+    while ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
+        // recvline[n] = 0;        /* null terminate */
+        fputs(msg.addr, stdout);
+        fputs(msg.currtime, stdout);
+        fputs(msg.payload, stdout);
+        // if (fputs(recvline, stdout) == EOF) {
+        //     printf("fputs error\n");
+        //     exit(EXIT_FAILURE);
+        // }
     }
     if (n < 0) {
         printf("read error\n");

@@ -28,13 +28,14 @@ void generate_message(char* ipaddr, struct message* msg)
     msg->addrlen = strlen(msg->addr);
 
     time_t ticks = time(NULL);
-    strcpy(msg->currtime, ctime(&ticks));
+    snprintf(msg->currtime, sizeof(msg->currtime), "%.24s\r\n", ctime(&ticks));
+    printf("%s", msg->currtime);
     msg->timelen = strlen(msg->currtime);
 
     FILE* fp = popen("who", "r");
     if (fp) {
         if (fgets(msg->payload, sizeof(msg->payload), fp)) {
-            printf("%s", msg->payload);
+            // printf("%s", msg->payload);
         }
         pclose(fp);
     }
@@ -45,8 +46,8 @@ int main(int argc, char **argv)
 {
     int    listenfd, connfd, portnum;
     struct sockaddr_in servaddr;
-    char   buff[MAXLINE];
-    time_t ticks;
+    // char   buff[MAXLINE];
+    // time_t ticks;
 
     if (argc != 2) {
         printf("usage: server <PortNumber>\n");
@@ -62,7 +63,7 @@ int main(int argc, char **argv)
     strncpy(ifr.ifr_name, IPADDR_INTERFACE, IFNAMSIZ-1);
     ioctl(listenfd, SIOCGIFADDR, &ifr);
     char* ipaddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    printf("%s\n", ipaddr);
+    // printf("%s\n", ipaddr);
 
     struct message msg;
     generate_message(ipaddr, &msg);
@@ -79,10 +80,9 @@ int main(int argc, char **argv)
     for ( ; ; ) {
         connfd = accept(listenfd, (struct sockaddr *) NULL, NULL);
 
-        ticks = time(NULL);
-        snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
-        write(connfd, buff, strlen(buff));
-        printf("Sending response: %s", buff);
+        // ticks = time(NULL);
+        // snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
+        write(connfd, &msg, sizeof(msg));
 
         close(connfd);
     }
