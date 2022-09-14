@@ -12,6 +12,7 @@
 
 #define MAXLINE     4096    /* max text line length */
 #define LISTENQ     1024    /* 2nd argument to listen() */
+#define IPADDR_INTERFACE "ens160"
 // #define DAYTIME_PORT 3333
 
 struct message{
@@ -21,12 +22,23 @@ struct message{
     char payload[MAXLINE];
 };
 
-void generate_message(struct message* msg)
+void generate_message(char* ipaddr, struct message* msg)
 {
+    strcpy(msg->addr, ipaddr);
+    msg->addrlen = strlen(msg->addr);
+
     time_t ticks = time(NULL);
     strcpy(msg->currtime, ctime(&ticks));
     msg->timelen = strlen(msg->currtime);
 
+    FILE* fp = popen("who", "r");
+    if (fp) {
+        if (fgets(msg->payload, sizeof(msg->payload), fp)) {
+            printf("%s", msg->payload);
+        }
+        pclose(fp);
+    }
+    msg->msglen = strlen(msg->payload);
 }
 
 int main(int argc, char **argv)
@@ -44,11 +56,16 @@ int main(int argc, char **argv)
     portnum = atoi(argv[1]);
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
+    // Get the IP address of the interface
     struct ifreq ifr;
     ifr.ifr_addr.sa_family = AF_INET;
-    strncpy(ifr.ifr_name, "ens160", IFNAMSIZ-1);
+    strncpy(ifr.ifr_name, IPADDR_INTERFACE, IFNAMSIZ-1);
     ioctl(listenfd, SIOCGIFADDR, &ifr);
-    printf("%s\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+    char* ipaddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    printf("%s\n", ipaddr);
+
+    struct message msg;
+    generate_message(ipaddr, &msg);
 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
