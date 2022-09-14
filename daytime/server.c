@@ -29,7 +29,7 @@ void generate_message(char* ipaddr, struct message* msg)
 
     time_t ticks = time(NULL);
     snprintf(msg->currtime, sizeof(msg->currtime), "%.24s\r\n", ctime(&ticks));
-    printf("%s", msg->currtime);
+    // printf("%s", msg->currtime);
     msg->timelen = strlen(msg->currtime);
 
     FILE* fp = popen("who", "r");
@@ -62,7 +62,8 @@ int main(int argc, char **argv)
     ifr.ifr_addr.sa_family = AF_INET;
     strncpy(ifr.ifr_name, IPADDR_INTERFACE, IFNAMSIZ-1);
     ioctl(listenfd, SIOCGIFADDR, &ifr);
-    char* ipaddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    char ipaddr[MAXLINE];
+    snprintf(ipaddr, sizeof(ipaddr), "%s\r\n", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
     // printf("%s\n", ipaddr);
 
     struct message msg;

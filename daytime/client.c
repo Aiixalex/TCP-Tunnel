@@ -64,8 +64,11 @@ int main(int argc, char **argv)
 
     while ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
         // recvline[n] = 0;        /* null terminate */
+        fputs("IP Address: ", stdout);
         fputs(msg.addr, stdout);
+        fputs("Time: ", stdout);
         fputs(msg.currtime, stdout);
+        fputs("Who: ", stdout);
         fputs(msg.payload, stdout);
         // if (fputs(recvline, stdout) == EOF) {
         //     printf("fputs error\n");
