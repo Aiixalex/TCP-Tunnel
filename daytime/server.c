@@ -22,9 +22,9 @@ struct message{
     char payload[MAXLINE];
 };
 
-void generate_message(char* ipaddr, struct message* msg)
+void generate_message(char* hostname, struct message* msg)
 {
-    strcpy(msg->addr, ipaddr);
+    strcpy(msg->addr, hostname);
     msg->addrlen = strlen(msg->addr);
 
     time_t ticks = time(NULL);
@@ -46,8 +46,6 @@ int main(int argc, char **argv)
 {
     int    listenfd, connfd, portnum;
     struct sockaddr_in servaddr;
-    // char   buff[MAXLINE];
-    // time_t ticks;
 
     if (argc != 2) {
         printf("usage: server <PortNumber>\n");
@@ -57,16 +55,23 @@ int main(int argc, char **argv)
     portnum = atoi(argv[1]);
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    // Get the IP address of the interface
-    struct ifreq ifr;
-    ifr.ifr_addr.sa_family = AF_INET;
-    strncpy(ifr.ifr_name, IPADDR_INTERFACE, IFNAMSIZ-1);
-    ioctl(listenfd, SIOCGIFADDR, &ifr);
-    char* ipaddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    // printf("%s\n", ipaddr);
+    // Get the hostname of the server
+    char hostbuffer[256];
+    if (gethostname(hostbuffer, sizeof(hostbuffer))) {
+        printf("gethostname error\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // // Get the IP address of the interface
+    // struct ifreq ifr;
+    // ifr.ifr_addr.sa_family = AF_INET;
+    // strncpy(ifr.ifr_name, IPADDR_INTERFACE, IFNAMSIZ-1);
+    // ioctl(listenfd, SIOCGIFADDR, &ifr);
+    // char* ipaddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    // // printf("%s\n", ipaddr);
 
     struct message msg;
-    generate_message(ipaddr, &msg);
+    generate_message(hostbuffer, &msg);
 
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;

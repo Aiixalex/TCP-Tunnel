@@ -41,11 +41,12 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
+    // Get the host ipaddr and service
     char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
-
     if (getnameinfo(result->ai_addr, result->ai_addrlen, hbuf, sizeof(hbuf), sbuf,
-                sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0)
-        printf("host=%s, serv=%s\n", hbuf, sbuf);
+        sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
+        // printf("host=%s, serv=%s\n", hbuf, sbuf);
+    }
 
 
     if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
@@ -70,16 +71,20 @@ int main(int argc, char **argv)
 
     while ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
         // recvline[n] = 0;        /* null terminate */
-        if (fprintf(stdout, "IP Address: %s\n", msg.addr) == EOF) {
-            printf("fputs ipaddr error\n");
+        if (fprintf(stdout, "Server Name: %s\n", msg.addr) == EOF) {
+            printf("fprintf server name error\n");
+            exit(EXIT_FAILURE);
+        }
+        if (fprintf(stdout, "IP Address: %s\n", hbuf) == EOF) {
+            printf("fprintf ipaddr error\n");
             exit(EXIT_FAILURE);
         }
         if (fprintf(stdout, "Time: %s\n", msg.currtime) == EOF) {
-            printf("fputs ipaddr error\n");
+            printf("fprintf currtime error\n");
             exit(EXIT_FAILURE);
         }
         if (fprintf(stdout, "Who: %s", msg.payload) == EOF) {
-            printf("fputs ipaddr error\n");
+            printf("fprintf who command error\n");
             exit(EXIT_FAILURE);
         }
     }
