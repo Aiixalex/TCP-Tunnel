@@ -69,7 +69,7 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    while ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
+    if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
         // recvline[n] = 0;        /* null terminate */
         if (fprintf(stdout, "Server Name: %s\n", msg.addr) == EOF) {
             printf("fprintf server name error\n");
