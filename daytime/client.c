@@ -94,12 +94,13 @@ int main(int argc, char **argv)
     }
 
     // Get the hostname of the server
+    struct message ret_msg;
     char hostbuffer[MAXLINE];
     if (gethostname(hostbuffer, sizeof(hostbuffer))) {
         printf("gethostname error\n");
         exit(EXIT_FAILURE);
     }
-    strcpy(msg.addr, hostbuffer);
+    strcpy(ret_msg.addr, hostbuffer);
     write(sockfd, &msg, sizeof(msg));
 
     exit(EXIT_SUCCESS);
