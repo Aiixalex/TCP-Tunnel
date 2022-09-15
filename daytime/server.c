@@ -36,7 +36,7 @@ void generate_message(char* hostname, struct message* msg)
     if (fp) {
         char line[MAXLINE];
         while (fgets(line, sizeof(line), fp)) {
-            strcat(msg->payload, line)
+            strcat(msg->payload, line);
         }
         pclose(fp);
     }
