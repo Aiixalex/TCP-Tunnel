@@ -41,6 +41,12 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
+    char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+
+    if (getnameinfo(result->ai_addr, result->ai_addrlen, hbuf, sizeof(hbuf), sbuf,
+                sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0)
+        printf("host=%s, serv=%s\n", hbuf, sbuf);
+
 
     if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
         printf("socket error\n");
@@ -72,7 +78,7 @@ int main(int argc, char **argv)
             printf("fputs ipaddr error\n");
             exit(EXIT_FAILURE);
         }
-        if (fprintf(stdout, "Who: %s\n", msg.payload) == EOF) {
+        if (fprintf(stdout, "Who: %s", msg.payload) == EOF) {
             printf("fputs ipaddr error\n");
             exit(EXIT_FAILURE);
         }

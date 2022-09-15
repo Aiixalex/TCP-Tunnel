@@ -39,7 +39,7 @@ void generate_message(char* ipaddr, struct message* msg)
         }
         pclose(fp);
     }
-    msg->msglen = strlen(msg->payload);
+    msg->msglen = strlen(msg->payload) + msg->addrlen + msg->timelen;
 }
 
 int main(int argc, char **argv)
