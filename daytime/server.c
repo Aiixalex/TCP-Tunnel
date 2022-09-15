@@ -1,10 +1,8 @@
 #include <netinet/in.h>
 #include <net/if.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <arpa/inet.h>
-#include <netdb.h>
 #include <time.h>
 #include <stdlib.h>
 #include <strings.h>
@@ -46,25 +44,16 @@ void generate_message(char* hostname, struct message* msg)
 
 int main(int argc, char **argv)
 {
-    int    listenfd, connfd, s;
-    struct addrinfo hints, *result;
+    int    listenfd, connfd, portnum;
+    struct sockaddr_in servaddr;
 
     if (argc != 2) {
         printf("usage: server <PortNumber>\n");
         exit(1);
     }
 
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;
-    hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
-    hints.ai_protocol = 0;           /* Any protocol */
-    s = getaddrinfo(NULL, argv[1], &hints, &result);
-    if (s != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-        exit(EXIT_FAILURE);
-    }
-
-    listenfd = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+    portnum = atoi(argv[1]);
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
     // Get the hostname of the server
     char hostbuffer[MAXLINE];
@@ -81,22 +70,15 @@ int main(int argc, char **argv)
     // char* ipaddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
     // // printf("%s\n", ipaddr);
 
-    // Get the server ipaddr and service
-    char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
-    if (getnameinfo(result->ai_addr, result->ai_addrlen, hbuf, sizeof(hbuf), sbuf,
-        sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
-        // printf("host=%s, serv=%s\n", hbuf, sbuf);
-    }
-
     struct message msg;
     generate_message(hostbuffer, &msg);
 
-    // bzero(&servaddr, sizeof(servaddr));
-    // servaddr.sin_family = AF_INET;
-    // servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    // servaddr.sin_port = htons(portnum); /* daytime server */
+    bzero(&servaddr, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(portnum); /* daytime server */
 
-    bind(listenfd, result->ai_addr, result->ai_addrlen);
+    bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 
     listen(listenfd, LISTENQ);
 
@@ -111,7 +93,7 @@ int main(int argc, char **argv)
         if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
         {
             printf("Server Name: %s\n", recv_msg.addr);
-            printf("Ip Address: %s\n", hbuf);
+            printf("Ip Address: %s\n", recv_msg.addr);
         }
 
         close(connfd);
