@@ -83,6 +83,9 @@ int main(int argc, char **argv)
     listen(listenfd, LISTENQ);
 
     struct message recv_msg;
+    struct sockaddr_in accept_addr;
+    socklen_t addr_size = sizeof(struct sockaddr_in);
+    char clientip[MAXLINE];
     for ( ; ; ) {
         connfd = accept(listenfd, (struct sockaddr *) NULL, NULL);
 
@@ -90,10 +93,12 @@ int main(int argc, char **argv)
         // snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
         write(connfd, &msg, sizeof(msg));
 
+        getpeername(connfd, (struct sockaddr *)&accept_addr, &addr_size);
+        strcpy(clientip, inet_ntoa(accept_addr.sin_addr)); 
         if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
         {
             printf("Server Name: %s\n", recv_msg.addr);
-            printf("Ip Address: %s\n", recv_msg.addr);
+            printf("Ip Address: %s\n", clientip);
         }
 
         close(connfd);
