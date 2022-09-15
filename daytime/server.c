@@ -34,8 +34,9 @@ void generate_message(char* hostname, struct message* msg)
 
     FILE* fp = popen("who", "r");
     if (fp) {
-        if (fgets(msg->payload, sizeof(msg->payload), fp)) {
-            // printf("%s", msg->payload);
+        char line[MAXLINE];
+        while (fgets(line, sizeof(line), fp)) {
+            strcat(msg->payload, line);
         }
         pclose(fp);
     }
