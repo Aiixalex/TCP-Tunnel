@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    // Get the host ipaddr and service
+    // Get the server ipaddr and service
     char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
     if (getnameinfo(result->ai_addr, result->ai_addrlen, hbuf, sizeof(hbuf), sbuf,
         sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
@@ -92,6 +92,15 @@ int main(int argc, char **argv)
         printf("read error\n");
         exit(EXIT_FAILURE);
     }
+
+    // Get the hostname of the server
+    char hostbuffer[MAXLINE];
+    if (gethostname(hostbuffer, sizeof(hostbuffer))) {
+        printf("gethostname error\n");
+        exit(EXIT_FAILURE);
+    }
+    strcpy(msg.addr, hostbuffer);
+    write(sockfd, &msg, sizeof(msg));
 
     exit(EXIT_SUCCESS);
 }

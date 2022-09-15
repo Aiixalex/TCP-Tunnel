@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
     // Get the hostname of the server
-    char hostbuffer[256];
+    char hostbuffer[MAXLINE];
     if (gethostname(hostbuffer, sizeof(hostbuffer))) {
         printf("gethostname error\n");
         exit(EXIT_FAILURE);
@@ -88,6 +88,10 @@ int main(int argc, char **argv)
         // ticks = time(NULL);
         // snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
         write(connfd, &msg, sizeof(msg));
+        if (read(connfd, &msg, sizeof(msg)) > 0)
+        {
+            printf("Server Name: %s\n", msg.addr);
+        }
 
         close(connfd);
     }
