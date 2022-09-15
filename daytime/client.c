@@ -100,8 +100,9 @@ int main(int argc, char **argv)
         printf("gethostname error\n");
         exit(EXIT_FAILURE);
     }
+
     strcpy(ret_msg.addr, hostbuffer);
-    write(sockfd, &msg, sizeof(msg));
+    write(sockfd, &ret_msg, sizeof(ret_msg));
 
     exit(EXIT_SUCCESS);
 }
