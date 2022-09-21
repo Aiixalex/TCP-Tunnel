@@ -62,12 +62,6 @@ int main(int argc, char **argv)
     strcpy(hostname, host->h_name);
     strcpy(hostip, inet_ntoa(hostaddr.sin_addr));
 
-
-    if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
-        printf("socket error\n");
-        exit(EXIT_FAILURE);
-    }
-
     // portnum = atoi(argv[2]);
 
     // bzero(&servaddr, sizeof(servaddr));
@@ -82,6 +76,10 @@ int main(int argc, char **argv)
         struct message msg;
         for ( ; ; ) {
             printf("111\n");
+            if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
+                printf("socket error\n");
+                exit(EXIT_FAILURE);
+            }
             if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
                 printf("connect error\n");
                 exit(EXIT_FAILURE);
