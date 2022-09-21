@@ -102,7 +102,7 @@ int main(int argc, char **argv)
         getpeername(connfd, (struct sockaddr *)&accept_addr, &addr_size);
         strcpy(clientip, inet_ntoa(accept_addr.sin_addr));
 
-        host = gethostbyaddr(clientip, sizeof(struct in_addr), AF_INET);
+        host = gethostbyaddr( (const void*) &accept_addr.sin_addr, sizeof(struct in_addr), AF_INET);
         // if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
         // {
         //     printf("Server Name: %s\n", recv_msg.name);
