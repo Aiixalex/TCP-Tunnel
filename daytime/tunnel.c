@@ -94,8 +94,8 @@ int main(int argc, char **argv)
             struct message msg;
             if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
                 // recvline[n] = 0;        /* null terminate */
-                if (fprintf(stdout, "Received request from client %s port %d destined to server %s port %s.\n", 
-                            client->h_name, clientport, server->h_name, serverport) == EOF) {
+                if (fprintf(stdout, "%s Received request from client %s port %d destined to server %s port %s.\n", 
+                            msg.currtime, client->h_name, clientport, server->h_name, serverport) == EOF) {
                     printf("fprintf server name error\n");
                     exit(EXIT_FAILURE);
                 }
