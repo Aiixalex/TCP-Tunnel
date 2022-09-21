@@ -62,7 +62,6 @@ int main(int argc, char **argv)
             char serverport[MAXLINE];
             strcpy(serverip, msg_from_tunnel.serveraddr);
             strcpy(serverport, msg_from_tunnel.serverport);
-            printf("Server ip: %s\nServer Port: %s\n", msg_from_tunnel.serveraddr, msg_from_tunnel.serverport);
 
             int    sockfd, s, n;
             struct addrinfo hints, *result;

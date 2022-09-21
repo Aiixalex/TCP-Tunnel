@@ -117,13 +117,13 @@ int main(int argc, char **argv)
         write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
 
         struct message msg;
-        if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
+        while ( (n = read(sockfd, &msg, sizeof(msg))) <= 0) {
             // recvline[n] = 0;        /* null terminate */
-            if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
-                        server->h_name, serverip, msg.currtime, host->h_name, hostip, argv[2]) == EOF) {
-                printf("fprintf server name error\n");
-                exit(EXIT_FAILURE);
-            }
+        }
+        if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
+                    server->h_name, serverip, msg.currtime, host->h_name, hostip, argv[2]) == EOF) {
+            printf("fprintf server name error\n");
+            exit(EXIT_FAILURE);
         }
         if (n < 0) {
             printf("read error\n");
