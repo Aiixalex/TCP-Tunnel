@@ -75,7 +75,6 @@ int main(int argc, char **argv)
     if (argc == 3) { // connect server directly
         struct message msg;
         for ( ; ; ) {
-            printf("111\n");
             if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
                 printf("socket error\n");
                 exit(EXIT_FAILURE);
@@ -140,7 +139,6 @@ int main(int argc, char **argv)
         // int flags = fcntl(sockfd, F_GETFL);
         // fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
         for ( ; ; ) {
-            printf("222\n");
             if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
                 printf("socket error\n");
                 exit(EXIT_FAILURE);
