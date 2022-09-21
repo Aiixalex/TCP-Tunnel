@@ -12,11 +12,16 @@
 #define MAXLINE     4096    /* max text line length */
 // #define DAYTIME_PORT 3333
 
-struct message{
+struct message {
     int addrlen, timelen, msglen;
     char addr[MAXLINE];
     char currtime[MAXLINE];
     char payload[MAXLINE];
+};
+
+struct msg_tunnel {
+    char serveraddr[MAXLINE];
+    char serverport[MAXLINE];
 };
 
 int main(int argc, char **argv)
@@ -75,12 +80,12 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    struct message msg;
     if (argc == 3) { // connect server directly
+        struct message msg;
         if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
             // recvline[n] = 0;        /* null terminate */
             if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\nWho: %s", 
-                        host->h_name, msg.addr, msg.currtime, msg.payload) == EOF) {
+                        host->h_name, hostip, msg.currtime, msg.payload) == EOF) {
                 printf("fprintf server name error\n");
                 exit(EXIT_FAILURE);
             }
@@ -106,6 +111,12 @@ int main(int argc, char **argv)
         server = gethostbyaddr( (const void *) &servaddr.sin_addr, sizeof(struct in_addr), AF_INET);
         strcpy(serverip, inet_ntoa(servaddr.sin_addr));
 
+        struct msg_tunnel msg_to_tunnel;
+        strcpy(msg_to_tunnel.serveraddr, serverip);
+        strcpy(msg_to_tunnel.serverport, argv[4]);
+        write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
+
+        struct message msg;
         if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
             // recvline[n] = 0;        /* null terminate */
             if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 

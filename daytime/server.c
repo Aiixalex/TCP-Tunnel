@@ -13,7 +13,7 @@
 
 #define MAXLINE     4096    /* max text line length */
 #define LISTENQ     1024    /* 2nd argument to listen() */
-#define IPADDR_INTERFACE "ens160"
+// #define IPADDR_INTERFACE "ens160"
 // #define DAYTIME_PORT 3333
 
 struct message{
@@ -23,11 +23,8 @@ struct message{
     char payload[MAXLINE];
 };
 
-void generate_message(char* ipaddr, struct message* msg)
+void generate_message(struct message* msg)
 {
-    strcpy(msg->addr, ipaddr);
-    msg->addrlen = strlen(msg->addr);
-
     time_t ticks = time(NULL);
     snprintf(msg->currtime, sizeof(msg->currtime), "%.24s", ctime(&ticks));
     // printf("%s", msg->currtime);
@@ -47,7 +44,7 @@ void generate_message(char* ipaddr, struct message* msg)
 int main(int argc, char **argv)
 {
     int    listenfd, connfd, portnum;
-    struct sockaddr_in servaddr;
+    struct sockaddr_in clientaddr;
     struct hostent* host;
 
     if (argc != 2) {
@@ -58,19 +55,19 @@ int main(int argc, char **argv)
     portnum = atoi(argv[1]);
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    bzero(&servaddr, sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(portnum); /* daytime server */
+    bzero(&clientaddr, sizeof(clientaddr));
+    clientaddr.sin_family = AF_INET;
+    clientaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    clientaddr.sin_port = htons(portnum);
 
-    bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
+    bind(listenfd, (struct sockaddr *) &clientaddr, sizeof(clientaddr));
 
     struct message msg;
-    generate_message(inet_ntoa(servaddr.sin_addr), &msg);
+    generate_message(&msg);
 
     listen(listenfd, LISTENQ);
 
-    struct sockaddr_in clientaddr;
+    // struct sockaddr_in clientaddr;
     socklen_t addr_size = sizeof(struct sockaddr_in);
     char clientip[MAXLINE];
 
