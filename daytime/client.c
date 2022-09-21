@@ -51,6 +51,8 @@ int main(int argc, char **argv)
         sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
         // printf("host=%s, serv=%s\n", hbuf, sbuf);
     }
+    struct hostent* host;
+    host = gethostbyaddr( (const void*)result->ai_addr, sizeof(struct in_addr), AF_INET);
 
 
     if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
@@ -77,7 +79,7 @@ int main(int argc, char **argv)
         struct message msg;
         if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
             // recvline[n] = 0;        /* null terminate */
-            if (fprintf(stdout, "Server Name: %s\n", msg.name) == EOF) {
+            if (fprintf(stdout, "Server Name: %s\n", host->h_name) == EOF) {
                 printf("fprintf server name error\n");
                 exit(EXIT_FAILURE);
             }
