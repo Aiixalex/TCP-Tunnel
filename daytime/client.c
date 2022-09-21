@@ -122,15 +122,20 @@ int main(int argc, char **argv)
         struct message recv_msg;
         int flags = fcntl(sockfd, F_GETFL);
         fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
-        if (read(sockfd, &recv_msg, sizeof(recv_msg)) > 0)
-        {
-            if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
-                        server->h_name, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
-                printf("fprintf server name error\n");
+        for ( ; ; ) {
+            if ( (n = read(sockfd, &recv_msg, sizeof(recv_msg))) > 0) {
+                if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
+                            server->h_name, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
+                    printf("fprintf server name error\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+            if (n < 0) {
+                printf("read error\n");
                 exit(EXIT_FAILURE);
             }
-        };
-        
+        }
         // if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
         //     // recvline[n] = 0;        /* null terminate */
         //     if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
