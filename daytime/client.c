@@ -72,50 +72,35 @@ int main(int argc, char **argv)
     //     exit(1);
     // }
 
-    if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
-        printf("socket error\n");
-        exit(EXIT_FAILURE);
-    }
-    if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
-        printf("connect error\n");
-        exit(EXIT_FAILURE);
-    }
-
     if (argc == 3) { // connect server directly
         struct message msg;
-        while ( (n = read(sockfd, &msg, sizeof(msg))) > 0 && strlen(msg.payload) == msg.msglen && strlen(msg.currtime) == msg.timelen) {
-            // recvline[n] = 0;        /* null terminate */
-            // printf("%ld %d %ld %d\n", strlen(msg.payload), msg.msglen, strlen(msg.currtime), msg.timelen);
-            if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\nWho: %s", 
-                        host->h_name, hostip, msg.currtime, msg.payload) == EOF) {
-                printf("fprintf server name error\n");
+        for ( ; ; ) {
+            printf("111\n");
+            if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
+                printf("socket error\n");
                 exit(EXIT_FAILURE);
             }
+            if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
+                printf("connect error\n");
+                exit(EXIT_FAILURE);
+            }
+            if ( (n = read(sockfd, &msg, sizeof(msg))) > 0 && strlen(msg.payload) == msg.msglen && strlen(msg.currtime) == msg.timelen) {
+                // recvline[n] = 0;        /* null terminate */
+                // printf("%ld %d %ld %d\n", strlen(msg.payload), msg.msglen, strlen(msg.currtime), msg.timelen);
+                if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\nWho: %s", 
+                            host->h_name, hostip, msg.currtime, msg.payload) == EOF) {
+                    printf("fprintf server name error\n");
+                    exit(EXIT_FAILURE);
+                }
+                close(sockfd);
+                break;
+            }
+            if (n < 0) {
+                printf("read error\n");
+                exit(EXIT_FAILURE);
+            }
+            close(sockfd);
         }
-        if (n < 0) {
-            printf("read error\n");
-            exit(EXIT_FAILURE);
-        }
-        // for ( ; ; ) {
-        //     printf("111\n");
-            
-        //     if ( (n = read(sockfd, &msg, sizeof(msg))) > 0 && strlen(msg.payload) == msg.msglen && strlen(msg.currtime) == msg.timelen) {
-        //         // recvline[n] = 0;        /* null terminate */
-        //         // printf("%ld %d %ld %d\n", strlen(msg.payload), msg.msglen, strlen(msg.currtime), msg.timelen);
-        //         if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\nWho: %s", 
-        //                     host->h_name, hostip, msg.currtime, msg.payload) == EOF) {
-        //             printf("fprintf server name error\n");
-        //             exit(EXIT_FAILURE);
-        //         }
-        //         close(sockfd);
-        //         break;
-        //     }
-        //     if (n < 0) {
-        //         printf("read error\n");
-        //         exit(EXIT_FAILURE);
-        //     }
-        //     close(sockfd);
-        // }
     }
     else if (argc == 5) { // connect server through tunnel
         struct addrinfo servhints, *servresult;
@@ -129,31 +114,53 @@ int main(int argc, char **argv)
         struct hostent* server;
         struct sockaddr_in servaddr;
         char serverip[MAXLINE];
+        char servername[MAXLINE];
         servaddr = *(struct sockaddr_in*)servresult->ai_addr;
         server = gethostbyaddr( (const void *) &servaddr.sin_addr, sizeof(struct in_addr), AF_INET);
         strcpy(serverip, inet_ntoa(servaddr.sin_addr));
+        strcpy(servername, server->h_name);
 
         struct msg_tunnel msg_to_tunnel;
         strcpy(msg_to_tunnel.serveraddr, serverip);
         strcpy(msg_to_tunnel.serverport, argv[4]);
+
+        if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
+            printf("socket error\n");
+            exit(EXIT_FAILURE);
+        }
+        if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
+            printf("connect error\n");
+            exit(EXIT_FAILURE);
+        }
         write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
 
         struct message recv_msg;
         // int flags = fcntl(sockfd, F_GETFL);
         // fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
         for ( ; ; ) {
-            if ( (n = read(sockfd, &recv_msg, sizeof(recv_msg))) > 0) {
+            printf("222\n");
+            if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
+                printf("socket error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
+                printf("connect error\n");
+                exit(EXIT_FAILURE);
+            }
+            if ( (n = read(sockfd, &recv_msg, sizeof(recv_msg))) > 0 && strlen(recv_msg.currtime) == recv_msg.timelen) {
                 if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
-                            server->h_name, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
+                            servername, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
                     printf("fprintf server name error\n");
                     exit(EXIT_FAILURE);
                 }
+                close(sockfd);
+                break;
             }
-
             if (n < 0) {
                 printf("read error\n");
                 exit(EXIT_FAILURE);
             }
+            close(sockfd);
         }
         // if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
         //     // recvline[n] = 0;        /* null terminate */
