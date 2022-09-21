@@ -124,20 +124,6 @@ int main(int argc, char **argv)
         strcpy(msg_to_tunnel.serveraddr, serverip);
         strcpy(msg_to_tunnel.serverport, argv[4]);
 
-        memset(&hints, 0, sizeof(hints));
-        hints.ai_family = AF_INET;
-        hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
-        s = getaddrinfo(argv[1], argv[2], &hints, &result);
-        if (s != 0) {
-            fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-            exit(EXIT_FAILURE);
-        }
-
-        hostaddr = *(struct sockaddr_in*)result->ai_addr;
-        host = gethostbyaddr( (const void *) &hostaddr.sin_addr, sizeof(struct in_addr), AF_INET);
-        strcpy(hostname, host->h_name);
-        strcpy(hostip, inet_ntoa(hostaddr.sin_addr));
-
         if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
             printf("socket error\n");
             exit(EXIT_FAILURE);
@@ -163,8 +149,6 @@ int main(int argc, char **argv)
                 printf("connect error\n");
                 exit(EXIT_FAILURE);
             }
-            struct sockaddr_in tempaddr = *(struct sockaddr_in*)result->ai_addr;
-            printf("%s\n", inet_ntoa(tempaddr.sin_addr));
             if ( (n = read(sockfd, &recv_msg, sizeof(recv_msg))) > 0 && strlen(recv_msg.currtime) == recv_msg.timelen) {
                 if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
                             servername, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
