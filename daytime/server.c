@@ -19,15 +19,14 @@
 struct message{
     int addrlen, timelen, msglen;
     char addr[MAXLINE];
-    char name[MAXLINE];
     char currtime[MAXLINE];
     char payload[MAXLINE];
 };
 
-void generate_message(char* hostname, struct message* msg)
+void generate_message(char* ipaddr, struct message* msg)
 {
-    strcpy(msg->name, hostname);
-    msg->addrlen = strlen(msg->name);
+    strcpy(msg->addr, ipaddr);
+    msg->addrlen = strlen(msg->addr);
 
     time_t ticks = time(NULL);
     snprintf(msg->currtime, sizeof(msg->currtime), "%.24s", ctime(&ticks));
@@ -59,34 +58,17 @@ int main(int argc, char **argv)
     portnum = atoi(argv[1]);
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    // Get the hostname of the server
-    char hostbuffer[MAXLINE];
-    if (gethostname(hostbuffer, sizeof(hostbuffer))) {
-        printf("gethostname error\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // // Get the IP address of the interface
-    // struct ifreq ifr;
-    // ifr.ifr_addr.sa_family = AF_INET;
-    // strncpy(ifr.ifr_name, IPADDR_INTERFACE, IFNAMSIZ-1);
-    // ioctl(listenfd, SIOCGIFADDR, &ifr);
-    // char* ipaddr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    // // printf("%s\n", ipaddr);
-
-    struct message msg;
-    generate_message(hostbuffer, &msg);
-
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(portnum); /* daytime server */
 
+    struct message msg;
+    generate_message(inet_ntoa(servaddr.sin_addr), &msg);
+
     bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 
     listen(listenfd, LISTENQ);
-
-    // struct message recv_msg;
 
     struct sockaddr_in clientaddr;
     socklen_t addr_size = sizeof(struct sockaddr_in);
@@ -109,10 +91,8 @@ int main(int argc, char **argv)
         //     printf("Ip Address: %s\n", clientip);
         // }
 
-        printf("Server Name: %s\n", host->h_name);
-        printf("Ip Address: %s\n", clientip);
+        printf("Server Name: %s\nIp Address: %s\n", host->h_name, clientip);
 
         close(connfd);
     }
 }
-
