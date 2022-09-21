@@ -122,7 +122,7 @@ int main(int argc, char **argv)
         struct message recv_msg;
         int flags = fcntl(sockfd, F_GETFL);
         fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
-        while (read(sockfd, &recv_msg, sizeof(recv_msg)) > 0)
+        if (read(sockfd, &recv_msg, sizeof(recv_msg)) > 0)
         {
             if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
                         server->h_name, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
