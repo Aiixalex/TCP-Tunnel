@@ -84,7 +84,7 @@ int main(int argc, char **argv)
                 printf("connect error\n");
                 exit(EXIT_FAILURE);
             }
-            if ( (n = read(sockfd, &msg, sizeof(msg))) > 0 && sizeof(msg) == msg.msglen) {
+            if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
                 // recvline[n] = 0;        /* null terminate */
                 if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\nWho: %s", 
                             host->h_name, hostip, msg.currtime, msg.payload) == EOF) {
