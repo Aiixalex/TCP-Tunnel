@@ -127,6 +127,7 @@ int main(int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
         }
+        printf("111111111111\n");
         if (n < 0) {
             printf("read error\n");
             exit(EXIT_FAILURE);
