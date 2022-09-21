@@ -48,6 +48,7 @@ int main(int argc, char **argv)
     struct sockaddr_in clientaddr;
     socklen_t addr_size = sizeof(struct sockaddr_in);
     char clientip[MAXLINE];
+    char clientname[MAXLINE];
     struct msg_tunnel msg_from_tunnel;
     for ( ; ; ) {
         connfd = accept(listenfd, (struct sockaddr *)&clientaddr, &addr_size);
@@ -55,6 +56,7 @@ int main(int argc, char **argv)
         strcpy(clientip, inet_ntoa(clientaddr.sin_addr));
 
         client = gethostbyaddr( (const void*) &clientaddr.sin_addr, sizeof(struct in_addr), AF_INET);
+        strcpy(clientname, client->h_name);
 
         if (read(connfd, &msg_from_tunnel, sizeof(msg_from_tunnel)) > 0)
         {
@@ -78,8 +80,10 @@ int main(int argc, char **argv)
 
             struct hostent* server;
             struct sockaddr_in serveraddr;
+            char servername[MAXLINE];
             serveraddr = *(struct sockaddr_in*)result->ai_addr;
             server = gethostbyaddr( (const void *) &serveraddr.sin_addr, sizeof(struct in_addr), AF_INET);
+            strcpy(servername, server->h_name);
 
             if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
                 printf("socket error\n");
@@ -95,7 +99,7 @@ int main(int argc, char **argv)
             if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
                 // recvline[n] = 0;        /* null terminate */
                 if (fprintf(stdout, "Received request from client %s port %d destined to server %s port %s.\n", 
-                            client->h_name, clientport, server->h_name, serverport) == EOF) {
+                            clientname, clientport, servername, serverport) == EOF) {
                     printf("fprintf server name error\n");
                     exit(EXIT_FAILURE);
                 }

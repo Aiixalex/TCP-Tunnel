@@ -124,6 +124,20 @@ int main(int argc, char **argv)
         strcpy(msg_to_tunnel.serveraddr, serverip);
         strcpy(msg_to_tunnel.serverport, argv[4]);
 
+        memset(&hints, 0, sizeof(hints));
+        hints.ai_family = AF_INET;
+        hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
+        s = getaddrinfo(argv[1], argv[2], &hints, &result);
+        if (s != 0) {
+            fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+            exit(EXIT_FAILURE);
+        }
+
+        hostaddr = *(struct sockaddr_in*)result->ai_addr;
+        host = gethostbyaddr( (const void *) &hostaddr.sin_addr, sizeof(struct in_addr), AF_INET);
+        strcpy(hostname, host->h_name);
+        strcpy(hostip, inet_ntoa(hostaddr.sin_addr));
+
         if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
             printf("socket error\n");
             exit(EXIT_FAILURE);
@@ -132,6 +146,8 @@ int main(int argc, char **argv)
             printf("connect error\n");
             exit(EXIT_FAILURE);
         }
+        struct sockaddr_in servaddr = *(struct sockaddr_in*)servresult->ai_addr;
+        printf("%s\n", inet_ntoa(servaddr.sin_addr));
         write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
 
         struct message recv_msg;

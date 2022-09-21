@@ -87,7 +87,7 @@ int main(int argc, char **argv)
         //     printf("Ip Address: %s\n", clientip);
         // }
 
-        printf("Server Name: %s\nIp Address: %s\n", host->h_name, clientip);
+        printf("Client Name: %s\nIp Address: %s\n", host->h_name, clientip);
 
         close(connfd);
     }
