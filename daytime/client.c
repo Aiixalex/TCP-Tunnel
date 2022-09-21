@@ -131,8 +131,6 @@ int main(int argc, char **argv)
             printf("connect error\n");
             exit(EXIT_FAILURE);
         }
-        struct sockaddr_in tempaddr = *(struct sockaddr_in*)result->ai_addr;
-        printf("%s\n", inet_ntoa(tempaddr.sin_addr));
         write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
 
         struct message recv_msg;
