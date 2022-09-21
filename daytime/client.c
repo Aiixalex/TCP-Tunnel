@@ -45,14 +45,20 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    // Get the server ipaddr and service
-    char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
-    if (getnameinfo(result->ai_addr, result->ai_addrlen, hbuf, sizeof(hbuf), sbuf,
-        sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
-        // printf("host=%s, serv=%s\n", hbuf, sbuf);
-    }
+    // // Get the server ipaddr and service
+    // char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+    // if (getnameinfo(result->ai_addr, result->ai_addrlen, hbuf, sizeof(hbuf), sbuf,
+    //     sizeof(sbuf), NI_NUMERICHOST | NI_NUMERICSERV) == 0) {
+    //     // printf("host=%s, serv=%s\n", hbuf, sbuf);
+    // }
+
+    // Get server hostname
     struct hostent* host;
-    host = gethostbyaddr( (const void*)result->ai_addr, sizeof(struct in_addr), AF_INET);
+    struct sockaddr_in servaddr;
+    char serverip[MAXLINE];
+    servaddr = *(struct sockaddr_in*)result->ai_addr;
+    host = gethostbyaddr( (const void *) &servaddr.sin_addr, sizeof(struct in_addr), AF_INET);
+    strcpy(serverip, inet_ntoa(servaddr.sin_addr));
 
 
     if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
@@ -83,7 +89,7 @@ int main(int argc, char **argv)
                 printf("fprintf server name error\n");
                 exit(EXIT_FAILURE);
             }
-            if (fprintf(stdout, "IP Address: %s\n", hbuf) == EOF) {
+            if (fprintf(stdout, "IP Address: %s\n", serverip) == EOF) {
                 printf("fprintf ipaddr error\n");
                 exit(EXIT_FAILURE);
             }
@@ -120,7 +126,7 @@ int main(int argc, char **argv)
                 printf("fprintf server name error\n");
                 exit(EXIT_FAILURE);
             }
-            if (fprintf(stdout, "IP Address: %s\n", hbuf) == EOF) {
+            if (fprintf(stdout, "IP Address: %s\n", serverip) == EOF) {
                 printf("fprintf ipaddr error\n");
                 exit(EXIT_FAILURE);
             }
