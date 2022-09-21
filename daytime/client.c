@@ -139,10 +139,10 @@ int main(int argc, char **argv)
         //         exit(EXIT_FAILURE);
         //     }
         // }
-        if (n < 0) {
-            printf("read error\n");
-            exit(EXIT_FAILURE);
-        }
+        // if (n < 0) {
+        //     printf("read error\n");
+        //     exit(EXIT_FAILURE);
+        // }
     } else {
         printf("usage: client <ServerIp> <ServerPort> or client <TunnelIp> <TunnelPort> <ServerIp> <ServerPort>\n");
         exit(EXIT_FAILURE);
