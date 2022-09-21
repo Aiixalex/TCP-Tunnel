@@ -28,7 +28,6 @@ void generate_message(struct message* msg)
     time_t ticks = time(NULL);
     snprintf(msg->currtime, sizeof(msg->currtime), "%.24s", ctime(&ticks));
     // printf("%s", msg->currtime);
-    msg->timelen = strlen(msg->currtime);
 
     FILE* fp = popen("who", "r");
     if (fp) {
@@ -38,7 +37,7 @@ void generate_message(struct message* msg)
         }
         pclose(fp);
     }
-    msg->msglen = strlen(msg->payload) + msg->addrlen + msg->timelen;
+    msg->msglen = sizeof(msg);
 }
 
 int main(int argc, char **argv)

@@ -97,7 +97,7 @@ int main(int argc, char **argv)
                 printf("read error\n");
                 exit(EXIT_FAILURE);
             }
-            close(sockfd);
+            shutdown(sockfd, SHUT_RDWR);
         }
     }
     else if (argc == 5) { // connect server through tunnel
@@ -125,7 +125,6 @@ int main(int argc, char **argv)
         // int flags = fcntl(sockfd, F_GETFL);
         // fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
         for ( ; ; ) {
-            printf("1\n");
             if ( (n = read(sockfd, &recv_msg, sizeof(recv_msg))) > 0) {
                 if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
                             server->h_name, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
