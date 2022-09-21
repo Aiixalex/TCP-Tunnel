@@ -86,6 +86,7 @@ int main(int argc, char **argv)
             }
             if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
                 // recvline[n] = 0;        /* null terminate */
+                printf("%ld%d\n", sizeof(msg), msg.msglen);
                 if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\nWho: %s", 
                             host->h_name, hostip, msg.currtime, msg.payload) == EOF) {
                     printf("fprintf server name error\n");
