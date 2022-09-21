@@ -98,7 +98,7 @@ int main(int argc, char **argv)
                 printf("read error\n");
                 exit(EXIT_FAILURE);
             }
-            shutdown(sockfd, SHUT_RDWR);
+            // shutdown(sockfd, SHUT_RDWR);
         }
     }
     else if (argc == 5) { // connect server through tunnel
