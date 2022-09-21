@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <netdb.h>
 
 #define MAXLINE     4096    /* max text line length */
 #define LISTENQ     1024    /* 2nd argument to listen() */
@@ -18,14 +19,15 @@
 struct message{
     int addrlen, timelen, msglen;
     char addr[MAXLINE];
+    char name[MAXLINE];
     char currtime[MAXLINE];
     char payload[MAXLINE];
 };
 
 void generate_message(char* hostname, struct message* msg)
 {
-    strcpy(msg->addr, hostname);
-    msg->addrlen = strlen(msg->addr);
+    strcpy(msg->name, hostname);
+    msg->addrlen = strlen(msg->name);
 
     time_t ticks = time(NULL);
     snprintf(msg->currtime, sizeof(msg->currtime), "%.24s", ctime(&ticks));
@@ -47,6 +49,7 @@ int main(int argc, char **argv)
 {
     int    listenfd, connfd, portnum;
     struct sockaddr_in servaddr;
+    struct hostent* host;
 
     if (argc != 2) {
         printf("usage: server <PortNumber>\n");
@@ -83,10 +86,14 @@ int main(int argc, char **argv)
 
     listen(listenfd, LISTENQ);
 
-    struct message recv_msg;
+    host = gethostbyaddr( (const void*) &servaddr.sin_addr, sizeof(struct in_addr), AF_INET);
+
+    // struct message recv_msg;
+
     struct sockaddr_in accept_addr;
     socklen_t addr_size = sizeof(struct sockaddr_in);
     char clientip[MAXLINE];
+
     for ( ; ; ) {
         connfd = accept(listenfd, (struct sockaddr *) NULL, NULL);
 
@@ -96,11 +103,14 @@ int main(int argc, char **argv)
 
         getpeername(connfd, (struct sockaddr *)&accept_addr, &addr_size);
         strcpy(clientip, inet_ntoa(accept_addr.sin_addr)); 
-        if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
-        {
-            printf("Server Name: %s\n", recv_msg.addr);
-            printf("Ip Address: %s\n", clientip);
-        }
+        // if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
+        // {
+        //     printf("Server Name: %s\n", recv_msg.name);
+        //     printf("Ip Address: %s\n", clientip);
+        // }
+
+        printf("Server Name: %s\n", host->h_name);
+        printf("Ip Address: %s\n", clientip);
 
         close(connfd);
     }

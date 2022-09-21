@@ -15,22 +15,26 @@
 struct message{
     int addrlen, timelen, msglen;
     char addr[MAXLINE];
+    char name[MAXLINE];
     char currtime[MAXLINE];
     char payload[MAXLINE];
+};
+
+struct msg_tunnel{
+    char addr[MAXLINE];
+    char name[MAXLINE];
+    char currtime[MAXLINE];
+    char payload[MAXLINE];
+    char serveraddr[MAXLINE];
+    char servername[MAXLINE];
+    char serverport[MAXLINE];
 };
 
 int main(int argc, char **argv)
 {
     int    sockfd, n, s;
-    // char   recvline[MAXLINE + 1];
     struct addrinfo hints, *result;
-    struct message msg;
     // struct sockaddr_in servaddr;
-
-    if (argc != 3) {
-        printf("usage: client <IPaddress> <PortNumber>\n");
-        exit(1);
-    }
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
@@ -69,40 +73,72 @@ int main(int argc, char **argv)
         exit(EXIT_FAILURE);
     }
 
-    if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
-        // recvline[n] = 0;        /* null terminate */
-        if (fprintf(stdout, "Server Name: %s\n", msg.addr) == EOF) {
-            printf("fprintf server name error\n");
+    if (argc == 3) {
+        struct message msg;
+        if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
+            // recvline[n] = 0;        /* null terminate */
+            if (fprintf(stdout, "Server Name: %s\n", msg.name) == EOF) {
+                printf("fprintf server name error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (fprintf(stdout, "IP Address: %s\n", hbuf) == EOF) {
+                printf("fprintf ipaddr error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (fprintf(stdout, "Time: %s\n", msg.currtime) == EOF) {
+                printf("fprintf currtime error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (fprintf(stdout, "Who: %s", msg.payload) == EOF) {
+                printf("fprintf who command error\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+        if (n < 0) {
+            printf("read error\n");
             exit(EXIT_FAILURE);
         }
-        if (fprintf(stdout, "IP Address: %s\n", hbuf) == EOF) {
-            printf("fprintf ipaddr error\n");
-            exit(EXIT_FAILURE);
-        }
-        if (fprintf(stdout, "Time: %s\n", msg.currtime) == EOF) {
-            printf("fprintf currtime error\n");
-            exit(EXIT_FAILURE);
-        }
-        if (fprintf(stdout, "Who: %s", msg.payload) == EOF) {
-            printf("fprintf who command error\n");
-            exit(EXIT_FAILURE);
-        }
-    }
-    if (n < 0) {
-        printf("read error\n");
-        exit(EXIT_FAILURE);
-    }
 
-    // Get the hostname of the server
-    struct message ret_msg;
-    char hostbuffer[MAXLINE];
-    if (gethostname(hostbuffer, sizeof(hostbuffer))) {
-        printf("gethostname error\n");
-        exit(EXIT_FAILURE);
-    }
+        // // Get the hostname of the client
+        // struct message ret_msg;
+        // char hostbuffer[MAXLINE];
+        // if (gethostname(hostbuffer, sizeof(hostbuffer))) {
+        //     printf("gethostname error\n");
+        //     exit(EXIT_FAILURE);
+        // }
 
-    strcpy(ret_msg.addr, hostbuffer);
-    write(sockfd, &ret_msg, sizeof(ret_msg));
+        // strcpy(ret_msg.name, hostbuffer);
+        // write(sockfd, &ret_msg, sizeof(ret_msg));
+    }
+    else if (argc == 5) {
+        struct msg_tunnel msg;
+        if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
+            // recvline[n] = 0;        /* null terminate */
+            if (fprintf(stdout, "Server Name: %s\n", msg.servername) == EOF) {
+                printf("fprintf server name error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (fprintf(stdout, "IP Address: %s\n", hbuf) == EOF) {
+                printf("fprintf ipaddr error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (fprintf(stdout, "Time: %s\n", msg.currtime) == EOF) {
+                printf("fprintf currtime error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (fprintf(stdout, "Who: %s", msg.payload) == EOF) {
+                printf("fprintf who command error\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+        if (n < 0) {
+            printf("read error\n");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        printf("usage: client <IPaddress> <PortNumber> or client <TunnelIp> <TunnelPort> <ServerIp> <ServerPort>\n");
+        exit(1);
+    }
 
     exit(EXIT_SUCCESS);
 }
