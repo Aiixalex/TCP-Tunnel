@@ -109,6 +109,7 @@ int main(int argc, char **argv)
                 printf("write error\n");
                 exit(EXIT_FAILURE);
             }
+            printf("11111111111\n");
         }
 
         close(connfd);
