@@ -23,11 +23,8 @@ struct message{
     char payload[MAXLINE];
 };
 
-void generate_message(char* ipaddr, struct message* msg)
+void generate_message(struct message* msg)
 {
-    strcpy(msg->addr, ipaddr);
-    msg->addrlen = strlen(msg->addr);
-
     time_t ticks = time(NULL);
     snprintf(msg->currtime, sizeof(msg->currtime), "%.24s", ctime(&ticks));
     // printf("%s", msg->currtime);
@@ -66,7 +63,7 @@ int main(int argc, char **argv)
     bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 
     struct message msg;
-    generate_message(inet_ntoa(servaddr.sin_addr), &msg);
+    generate_message(&msg);
 
     listen(listenfd, LISTENQ);
 
