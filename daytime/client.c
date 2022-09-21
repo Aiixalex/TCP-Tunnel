@@ -118,9 +118,8 @@ int main(int argc, char **argv)
         write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
 
         struct message msg;
-        printf("33333333333\n");
-        int flags = fcntl(sockfd, F_GETFL);
-        fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
+        // int flags = fcntl(sockfd, F_GETFL);
+        // fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
         n = read(sockfd, &msg, sizeof(msg));
         if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
                     server->h_name, serverip, msg.currtime, host->h_name, hostip, argv[2]) == EOF) {
@@ -128,7 +127,6 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
         // if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
-        //     printf("22222222222\n");
         //     // recvline[n] = 0;        /* null terminate */
         //     if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
         //                 server->h_name, serverip, msg.currtime, host->h_name, hostip, argv[2]) == EOF) {
@@ -136,7 +134,6 @@ int main(int argc, char **argv)
         //         exit(EXIT_FAILURE);
         //     }
         // }
-        printf("111111111111\n");
         if (n < 0) {
             printf("read error\n");
             exit(EXIT_FAILURE);
