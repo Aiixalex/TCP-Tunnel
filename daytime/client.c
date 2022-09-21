@@ -147,6 +147,8 @@ int main(int argc, char **argv)
                 printf("connect error\n");
                 exit(EXIT_FAILURE);
             }
+            struct sockaddr_in servaddr = *(struct sockaddr_in*)servresult->ai_addr;
+            printf("%s\n", inet_ntoa(servaddr.sin_addr));
             if ( (n = read(sockfd, &recv_msg, sizeof(recv_msg))) > 0 && strlen(recv_msg.currtime) == recv_msg.timelen) {
                 if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
                             servername, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
