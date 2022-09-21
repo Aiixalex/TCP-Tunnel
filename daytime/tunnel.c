@@ -85,28 +85,33 @@ int main(int argc, char **argv)
             server = gethostbyaddr( (const void *) &serveraddr.sin_addr, sizeof(struct in_addr), AF_INET);
             strcpy(servername, server->h_name);
 
-            if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
-                printf("socket error\n");
-                exit(EXIT_FAILURE);
-            }
-
-            if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
-                printf("connect error\n");
-                exit(EXIT_FAILURE);
-            }
-
             struct message msg;
-            if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
-                // recvline[n] = 0;        /* null terminate */
-                if (fprintf(stdout, "Received request from client %s port %d destined to server %s port %s.\n", 
-                            clientname, clientport, servername, serverport) == EOF) {
-                    printf("fprintf server name error\n");
+            for ( ; ; ) {
+                if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
+                    printf("socket error\n");
                     exit(EXIT_FAILURE);
                 }
-            }
-            if (n < 0) {
-                printf("read error\n");
-                exit(EXIT_FAILURE);
+
+                if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
+                    printf("connect error\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
+                    // recvline[n] = 0;        /* null terminate */
+                    if (fprintf(stdout, "Received request from client %s port %d destined to server %s port %s.\n", 
+                                clientname, clientport, servername, serverport) == EOF) {
+                        printf("fprintf server name error\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    close(sockfd);
+                    break;
+                }
+                if (n < 0) {
+                    printf("read error\n");
+                    exit(EXIT_FAILURE);
+                }
+                close(sockfd);
             }
 
             write(connfd, &msg, sizeof(msg));
