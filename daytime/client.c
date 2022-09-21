@@ -72,14 +72,16 @@ int main(int argc, char **argv)
     //     exit(1);
     // }
 
+    if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
+        printf("socket error\n");
+        exit(EXIT_FAILURE);
+    }
+
     if (argc == 3) { // connect server directly
         struct message msg;
         for ( ; ; ) {
             printf("111\n");
-            if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
-                printf("socket error\n");
-                exit(EXIT_FAILURE);
-            }
+            
             if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
                 printf("connect error\n");
                 exit(EXIT_FAILURE);
