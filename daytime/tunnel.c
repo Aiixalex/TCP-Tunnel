@@ -105,7 +105,7 @@ int main(int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
 
-            printf(msg.currtime);
+            printf("%s\n", msg.currtime);
             write(sockfd, &msg, sizeof(msg));
             // if (write(sockfd, &msg, sizeof(msg)) < 0) {
             //     printf("write error\n");
