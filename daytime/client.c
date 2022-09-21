@@ -81,6 +81,7 @@ int main(int argc, char **argv)
     if (argc == 3) { // connect server directly
         struct message msg;
         for ( ; ; ) {
+            printf("111\n");
             if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
                 printf("connect error\n");
                 exit(EXIT_FAILURE);
