@@ -43,14 +43,14 @@ void generate_message(struct message* msg)
 
 int main(int argc, char **argv)
 {
-    int    listenfd, connfd, portnum;
-    struct sockaddr_in servaddr;
-    struct hostent* host;
-
     if (argc != 2) {
         printf("usage: server <PortNumber>\n");
         exit(1);
     }
+
+    int    listenfd, connfd, portnum;
+    struct sockaddr_in servaddr;
+    struct hostent* host;
 
     portnum = atoi(argv[1]);
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
