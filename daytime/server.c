@@ -88,21 +88,21 @@ int main(int argc, char **argv)
 
     // struct message recv_msg;
 
-    struct sockaddr_in accept_addr;
+    struct sockaddr_in clientaddr;
     socklen_t addr_size = sizeof(struct sockaddr_in);
     char clientip[MAXLINE];
 
     for ( ; ; ) {
-        connfd = accept(listenfd, (struct sockaddr *) NULL, NULL);
+        connfd = accept(listenfd, (struct sockaddr *)&clientaddr, &addr_size);
 
         // ticks = time(NULL);
         // snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
         write(connfd, &msg, sizeof(msg));
 
-        getpeername(connfd, (struct sockaddr *)&accept_addr, &addr_size);
-        strcpy(clientip, inet_ntoa(accept_addr.sin_addr));
+        // getpeername(connfd, (struct sockaddr *)&clientaddr, &addr_size);
+        strcpy(clientip, inet_ntoa(clientaddr.sin_addr));
 
-        host = gethostbyaddr( (const void*) &accept_addr.sin_addr, sizeof(struct in_addr), AF_INET);
+        host = gethostbyaddr( (const void*) &clientaddr.sin_addr, sizeof(struct in_addr), AF_INET);
         // if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
         // {
         //     printf("Server Name: %s\n", recv_msg.name);
