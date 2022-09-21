@@ -91,6 +91,7 @@ int main(int argc, char **argv)
                     printf("fprintf server name error\n");
                     exit(EXIT_FAILURE);
                 }
+                break;
             }
             if (n < 0) {
                 printf("read error\n");
