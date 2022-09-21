@@ -55,10 +55,11 @@ int main(int argc, char **argv)
     // Get server hostname
     struct hostent* host;
     struct sockaddr_in hostaddr;
+    char hostname[MAXLINE];
     char hostip[MAXLINE];
     hostaddr = *(struct sockaddr_in*)result->ai_addr;
     host = gethostbyaddr( (const void *) &hostaddr.sin_addr, sizeof(struct in_addr), AF_INET);
-    printf("%s\n", host->h_name);
+    strcpy(hostname, host->h_name);
     strcpy(hostip, inet_ntoa(hostaddr.sin_addr));
 
 
@@ -118,14 +119,12 @@ int main(int argc, char **argv)
         strcpy(msg_to_tunnel.serverport, argv[4]);
         write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
 
-        struct message msg;
+        struct message recv_msg;
         // int flags = fcntl(sockfd, F_GETFL);
         // fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
-        printf("%s\n", host->h_name);
-        n = read(sockfd, &msg, sizeof(msg));
-        printf("%s\n", msg.currtime);
+        n = read(sockfd, &recv_msg, sizeof(recv_msg));
         if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
-                    server->h_name, serverip, msg.currtime, host->h_name, hostip, argv[2]) == EOF) {
+                    server->h_name, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
             printf("fprintf server name error\n");
             exit(EXIT_FAILURE);
         }
