@@ -58,6 +58,7 @@ int main(int argc, char **argv)
     char hostip[MAXLINE];
     hostaddr = *(struct sockaddr_in*)result->ai_addr;
     host = gethostbyaddr( (const void *) &hostaddr.sin_addr, sizeof(struct in_addr), AF_INET);
+    printf("%s\n", host->h_name);
     strcpy(hostip, inet_ntoa(hostaddr.sin_addr));
 
 
