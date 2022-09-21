@@ -44,7 +44,7 @@ void generate_message(struct message* msg)
 int main(int argc, char **argv)
 {
     int    listenfd, connfd, portnum;
-    struct sockaddr_in clientaddr;
+    struct sockaddr_in servaddr;
     struct hostent* host;
 
     if (argc != 2) {
@@ -55,19 +55,19 @@ int main(int argc, char **argv)
     portnum = atoi(argv[1]);
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
-    bzero(&clientaddr, sizeof(clientaddr));
-    clientaddr.sin_family = AF_INET;
-    clientaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    clientaddr.sin_port = htons(portnum);
+    bzero(&servaddr, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(portnum);
 
-    bind(listenfd, (struct sockaddr *) &clientaddr, sizeof(clientaddr));
+    bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 
     struct message msg;
     generate_message(&msg);
 
     listen(listenfd, LISTENQ);
 
-    // struct sockaddr_in clientaddr;
+    struct sockaddr_in clientaddr;
     socklen_t addr_size = sizeof(struct sockaddr_in);
     char clientip[MAXLINE];
 
