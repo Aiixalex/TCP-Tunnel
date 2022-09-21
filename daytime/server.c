@@ -86,8 +86,6 @@ int main(int argc, char **argv)
 
     listen(listenfd, LISTENQ);
 
-    host = gethostbyaddr( (const void*) &servaddr.sin_addr, sizeof(struct in_addr), AF_INET);
-
     // struct message recv_msg;
 
     struct sockaddr_in accept_addr;
@@ -102,7 +100,9 @@ int main(int argc, char **argv)
         write(connfd, &msg, sizeof(msg));
 
         getpeername(connfd, (struct sockaddr *)&accept_addr, &addr_size);
-        strcpy(clientip, inet_ntoa(accept_addr.sin_addr)); 
+        strcpy(clientip, inet_ntoa(accept_addr.sin_addr));
+
+        host = gethostbyaddr(clientip, sizeof(struct in_addr), AF_INET);
         // if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
         // {
         //     printf("Server Name: %s\n", recv_msg.name);
