@@ -132,11 +132,20 @@ int main(int argc, char **argv)
             exit(EXIT_FAILURE);
         }
         write(sockfd, &msg_to_tunnel, sizeof(msg_to_tunnel));
+        close(sockfd);
 
         struct message recv_msg;
         // int flags = fcntl(sockfd, F_GETFL);
         // fcntl(sockfd, F_SETFL, flags & ~O_NONBLOCK);
         for ( ; ; ) {
+            if ( (sockfd = socket(result->ai_family, result->ai_socktype, 0)) < 0) {
+                printf("socket error\n");
+                exit(EXIT_FAILURE);
+            }
+            if (connect(sockfd, result->ai_addr, result->ai_addrlen) < 0) {
+                printf("connect error\n");
+                exit(EXIT_FAILURE);
+            }
             if ( (n = read(sockfd, &recv_msg, sizeof(recv_msg))) > 0 && strlen(recv_msg.currtime) == recv_msg.timelen) {
                 if (fprintf(stdout, "Server Name: %s\nIP Address: %s\nTime: %s\n\nVia Tunnel: %s\nIP Address: %s\nPort Number: %s\n", 
                             servername, serverip, recv_msg.currtime, hostname, hostip, argv[2]) == EOF) {
@@ -150,6 +159,7 @@ int main(int argc, char **argv)
                 printf("read error\n");
                 exit(EXIT_FAILURE);
             }
+            close(sockfd);
         }
         // if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
         //     // recvline[n] = 0;        /* null terminate */
