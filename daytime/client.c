@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #define MAXLINE     4096    /* max text line length */
 // #define DAYTIME_PORT 3333
@@ -118,6 +119,8 @@ int main(int argc, char **argv)
 
         struct message msg;
         printf("33333333333\n");
+        int flags = fcntl(sockfd, F_GETFL);
+        fcntl(sockfd, F_SETFL, saved_flags & ~O_NONBLOCK);
         if ( (n = read(sockfd, &msg, sizeof(msg))) > 0) {
             printf("22222222222\n");
             // recvline[n] = 0;        /* null terminate */
