@@ -109,7 +109,6 @@ int main(int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
 
-            
             write(connfd, &msg, sizeof(msg));
             // if (write(sockfd, &msg, sizeof(msg)) < 0) {
             //     printf("write error\n");
