@@ -79,10 +79,10 @@ int main(int argc, char **argv)
         write(connfd, &msg, sizeof(msg));
 
         // getpeername(connfd, (struct sockaddr *)&clientaddr, &addr_size);
-        fprintf(stdout, "1");
+        fprintf(stdout, "1\n");
         strcpy(clientip, inet_ntoa(clientaddr.sin_addr));
 
-        fprintf(stdout, "2");
+        fprintf(stdout, "2\n");
         host = gethostbyaddr( (const void*) &clientaddr.sin_addr, sizeof(struct in_addr), AF_INET);
         // if (read(connfd, &recv_msg, sizeof(recv_msg)) > 0)
         // {
