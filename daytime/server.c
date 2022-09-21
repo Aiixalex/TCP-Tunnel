@@ -63,10 +63,10 @@ int main(int argc, char **argv)
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(portnum); /* daytime server */
 
+    bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
+
     struct message msg;
     generate_message(inet_ntoa(servaddr.sin_addr), &msg);
-
-    bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
 
     listen(listenfd, LISTENQ);
 
