@@ -92,6 +92,7 @@ int main(int argc, char **argv)
                     printf("fprintf server name error\n");
                     exit(EXIT_FAILURE);
                 }
+                close(sockfd);
                 break;
             }
             if (n < 0) {
